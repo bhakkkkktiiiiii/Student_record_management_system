@@ -1,0 +1,188 @@
+#include<iostream>
+#include<fstream>
+using namespace std;
+
+class Person {
+public:
+    string name, mobile_no;
+
+    void enter() {
+        cout << "Enter Name: ";
+        cin >> name;
+        cout << "Enter Mobile NO: ";
+        cin >> mobile_no;
+    }
+
+    void show() const {
+        cout << "Name: " << name << endl;
+        cout << "Mobile NO: " << mobile_no << endl;
+    }
+};
+
+class Student : public Person {
+public:
+    string roll_no, Class, course, admission_year;
+
+    void enter() {
+        Person::enter();
+        cout << "Enter Roll NO: ";
+        cin >> roll_no;
+        cout << "Enter Year of study: ";
+        cin >> Class;
+        cout << "Enter Course: ";
+        cin >> course;
+        cout << "Enter Admission Year: ";
+        cin >> admission_year;
+    }
+
+    void show() const {
+        Person::show();
+        cout << "Roll NO: " << roll_no << endl;
+        cout << "Year of study: " << Class << endl;
+        cout << "Course: " << course << endl;
+        cout << "Admission Year: " << admission_year << endl;
+    }
+
+    bool search(string rollno) const {
+        return rollno == roll_no;
+    }
+
+    void update() {
+        cout << "\nPrevious data" << endl << endl;
+        show();
+        cout << "\nEnter new data" << endl << endl;
+        enter();
+    }
+};
+
+int main() {
+	cout<< "----STUDENT RECORD AND MANGEMENT----"<< endl;
+    int value;
+    Student students[30];
+    int total = 0;
+
+    while (true) {
+        cout << "\nPress 1 to Enter data" << endl;
+        cout << "Press 2 to Show data" << endl;
+        cout << "Press 3 to Search data" << endl;
+        cout << "Press 4 to Update data" << endl;
+        cout << "Press 5 to Delete data" << endl;
+        cout << "Press 6 to Quit" << endl;
+
+        cin >> value;
+
+        switch (value) {
+            case 1: {
+                if (total < 30) {
+                    students[total].enter();
+                    total++;
+
+                    ofstream outFile("C:/Users/Acer/Desktop/fh/student.txt", ios::app);
+                    if (outFile.is_open()) {
+                        outFile << "Student Data:\n";
+                        outFile << "Roll NO: " << students[total - 1].roll_no << "\n";
+                        outFile << "Name: " << students[total - 1].name << "\n";
+                        outFile << "Mobile NO: " << students[total - 1].mobile_no << "\n";
+                        outFile << "Year of study: " << students[total - 1].Class << "\n";
+                        outFile << "Course: " << students[total - 1].course << "\n";
+                        outFile << "Admission Year: " << students[total - 1].admission_year << "\n";
+                        outFile << "---------------------------\n";
+                        outFile.close();
+                    } else {
+                        cout << "Unable to open the file." << endl;
+                    }
+                } else {
+                    cout << "Maximum limit reached!" << endl;
+                }
+                break;
+            }
+            case 2: {
+                ifstream inFile("C:/Users/Acer/Desktop/fh/student.txt");
+                if (inFile.is_open()) {
+                    string line;
+                    while (getline(inFile, line)) {
+                        cout << line << endl;
+                    }
+                    inFile.close();
+                } else {
+                    cout << "Unable to open the file." << endl;
+                }
+                break;
+            }
+            case 3: {
+				string rollno;
+                cout << "Enter the roll no of student you want to search" << endl;
+                cin >> rollno;
+                bool found = false;
+                ifstream inFile("C:/Users/Acer/Desktop/fh/student.txt");
+                if (inFile.is_open()) {
+                    string line;
+                    while (getline(inFile, line)) {
+                        if (line.find("Roll NO: " + rollno) != string::npos) {
+                            found = true;
+                            cout << "Student found:" << endl;
+                            while (getline(inFile, line) && line != "---------------------------") {
+                                cout << line << endl;
+                            }
+                            break;
+                        }
+                    }
+                    inFile.close();
+                    if (!found) {
+                        cout << "Student with given roll no not found" << endl;
+                    }
+                } else {
+                    cout << "Unable to open the file." << endl;
+                }
+                break;
+            }
+			case 4: {
+                if (total == 0) {
+                    cout << "Please enter new data" << endl;
+                } else {
+                    string rollno;
+                    cout << "Enter the roll no of student you want to update" << endl;
+                    cin >> rollno;
+                    bool found = false;
+                    for (int i = 0; i < total; i++) {
+                        if (students[i].search(rollno)) {
+                            students[i].update();
+                            found = true;
+                            break;
+                        }
+                    }
+                    if (!found) {
+                        cout << "Student with given roll no not found" << endl;
+                    }
+                }
+                break;
+            }
+            case 5: {
+                if (total == 0) {
+                    cout << "Please enter new data" << endl;
+                } else {
+                    total = 0;
+                    ofstream outFile("C:/Users/Acer/Desktop/fh/student.txt", ios::trunc);
+					if (outFile.is_open()) {
+					    outFile.close();
+					    cout << "All records deleted!" << endl;
+					} else {
+					    cout << "Unable to open the file." << endl;
+					}
+                }
+                break;
+            }
+            case 6: {
+                exit(0);
+                break;
+            }
+            default: {
+                cout << "Invalid input" << endl;
+                break;
+            }
+        }
+    }
+
+    return 0;
+}
+working of this code
